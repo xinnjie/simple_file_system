@@ -4,10 +4,6 @@
 
 #ifndef OS_BIG_LAB_PARAM_H
 #define OS_BIG_LAB_PARAM_H
-
-#define NPROC        64  // maximum number of processes
-#define KSTACKSIZE 4096  // size of per-process kernel stack
-#define NCPU          8  // maximum number of CPUs
 #define NOFILE       16  // open files per process
 #define NFILE       100  // open files per system
 #define NINODE       50  // maximum number of active i-nodes
@@ -27,4 +23,19 @@
 #define BSIZE 512  // block size
 #define DIRSIZ 14
 
+
+
+#define SIZE_DINODE 64
+#define IPB           (BSIZE / SIZE_DINODE)
+#define NINODES 200
+#define NBITMAP  (FSSIZE/(BSIZE*8) + 1)
+#define NINODEBLOCKS (NINODES / IPB + 1)
+// Bitmap bits per block  由于每个磁盘块大小为512B 因此每个磁盘块能标记512*8个磁盘块的空闲情况
+#define BPB (BSIZE*8)
+
+
+#define FD_NONE 0
+#define FD_FD 1
+
+#define FS_NAME "fs.all"
 #endif //OS_BIG_LAB_PARAM_H

@@ -7,13 +7,15 @@
 
 
 #include <vector>
-#include "Buf.h"
+#include <models/SuperBlock.h>
+#include "models/Buf.h"
 #include "IDEio.h"
 
 class Bcache {
 private:
     std::vector<Buf> bufs;
     Buf head;
+    SuperBlock superBlock;
 
     IDEio &ideio;
     /**
@@ -25,6 +27,31 @@ private:
      * @return
      */
     Buf &bget(unsigned int dev, unsigned int blockno);
+
+
+    SuperBlock read_superblock(unsigned int dev) {
+        SuperBlock superBlock;
+        Buf &buf = bread(dev, 1);
+        memmove(&superBlock, buf.data, sizeof(superBlock));
+        brelease(buf);
+        return superBlock;
+    }
+
+    /**
+     * 返回第 index 块磁盘块所在的 bitmap 的块号
+     * @param index
+     * @return
+     */
+    inline unsigned int locate_bitmap_block(unsigned int index) {
+        return index/BPB + superBlock.bmap_start;
+    }
+
+    /**
+     * 将制定的 block 置为零
+     * @param dev
+     * @param block_index
+     */
+    void bzero(unsigned int dev, unsigned int block_index);
 
 public:
     /**
@@ -39,6 +66,8 @@ public:
             head.next->prev = &(*it);
             head.next = &(*it);
         }
+
+        superBlock = read_superblock(1);
     }
 
     /**
@@ -60,6 +89,11 @@ public:
      * @param buf
      */
     void brelease(Buf &buf);
+
+    /*
+     * 从缓冲块中分配出一块
+     */
+    unsigned int balloc(unsigned int dev);
 
 };
 

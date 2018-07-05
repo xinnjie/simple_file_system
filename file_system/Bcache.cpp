@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <util/panic.h>
 #include "Bcache.h"
 
 /*
@@ -54,6 +55,7 @@ Buf &Bcache::bread(unsigned int dev, unsigned int blockno) {
     return b;
 }
 
+//todo 每次 bwrite 更新的内容直接被写入磁盘，是不是不太好
 void Bcache::bwrite(Buf &buf) {
     buf.flags |= B_DIRTY;
     ideio.write(buf);
@@ -70,4 +72,29 @@ void Bcache::brelease(Buf &buf) {
         head.next->prev = bp;
         head.next = bp;
     }
+}
+
+unsigned int Bcache::balloc(unsigned int dev) {
+    // 在 bitmap 中查找空闲的块
+    for (unsigned int block_index = 0; block_index < superBlock.size; block_index += BPB) {
+        Buf &buf = bread(dev, locate_bitmap_block(block_index));
+        for (int bitmap_index = 0; bitmap_index < BPB && block_index + bitmap_index < superBlock.size; ++bitmap_index) {
+            int select_mask = 1 << (bitmap_index % 8);
+            if ((buf.data[bitmap_index/8] & select_mask) == 0) {// 空闲块
+                buf.data[bitmap_index/8] |= select_mask; // 置为已使用
+                brelease(buf);
+                bzero(dev, block_index + bitmap_index);
+                return block_index + bitmap_index;
+            }
+        }
+        brelease(buf);
+    }
+
+    panic("balloc: no blocks");
+}
+
+void Bcache::bzero(unsigned int dev, unsigned int block_index) {
+    Buf &buf = bread(dev, block_index);
+    memset(buf.data, 0, BSIZE);
+    brelease(buf);
 }
