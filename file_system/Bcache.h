@@ -46,12 +46,6 @@ private:
         return index/BPB + superBlock.bmap_start;
     }
 
-    /**
-     * 将制定的 block 置为零
-     * @param dev
-     * @param block_index
-     */
-    void bzero(unsigned int dev, unsigned int block_index);
 
 public:
     /**
@@ -90,10 +84,27 @@ public:
      */
     void brelease(Buf &buf);
 
-    /*
-     * 从缓冲块中分配出一块
+    /**
+     * 从磁盘中中分配出一块空闲块，会把对应磁盘 bitmap 置为已经使用，返回磁盘块号，可以用该磁盘号获取磁盘缓冲块
+     * @param dev
+     * @return
      */
     unsigned int balloc(unsigned int dev);
+
+    /**
+     * 使指定的块变为空闲块
+     * @param dev
+     * @param blockno
+     */
+    void bfree(unsigned dev, unsigned int blockno);
+
+    /**
+     * 将指定的 block 置为零
+     * @param dev
+     * @param block_index
+     */
+    void bzero(unsigned int dev, unsigned int block_index);
+
 
 };
 

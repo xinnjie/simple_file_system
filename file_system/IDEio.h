@@ -23,7 +23,6 @@ public:
     void write(Buf &buf);
     void read(Buf &buf);
 
-    fpos_t f_size;
 };
 
 

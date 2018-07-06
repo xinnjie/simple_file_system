@@ -98,3 +98,15 @@ void Bcache::bzero(unsigned int dev, unsigned int block_index) {
     memset(buf.data, 0, BSIZE);
     brelease(buf);
 }
+
+void Bcache::bfree(unsigned dev, unsigned int blockno) {
+    Buf &bitmap_buf = bread(dev, blockno/BPB + superBlock.bmap_start);
+    int byte_i = (blockno % BPB) / 8,
+            bit_i = (blockno % BPB) % 8;
+    int selected_mask = 1 << bit_i;
+    if ((bitmap_buf.data[byte_i] & selected_mask) == 0) {
+        panic("bfree: freeing free block");
+    }
+    bitmap_buf.data[byte_i] &= ~selected_mask;
+    brelease(bitmap_buf);
+}

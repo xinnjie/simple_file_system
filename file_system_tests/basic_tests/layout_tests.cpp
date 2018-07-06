@@ -33,13 +33,13 @@ TEST_F(layout_test, basic_test) {
 
 
 //TEST_F(layout_test, bcache_test1) {
-//    Buf &buf = bcache->bread(1, 10);
+//    Buf &buf = bcache_p->bread(1, 10);
 //    memset(buf.data, 'a', BSIZE);
 //    EXPECT_EQ(buf.data[10], 'a');
-//    bcache->bwrite(buf);
-//    bcache->brelease(buf);
+//    bcache_p->bwrite(buf);
+//    bcache_p->brelease(buf);
 //
-//    Buf &readBuf = bcache->bread(1, 10);
+//    Buf &readBuf = bcache_p->bread(1, 10);
 //    EXPECT_EQ(buf.data[10], 'a');
 //
 //

@@ -28,6 +28,7 @@ unsigned int Icache::find_block_location(Inode &inode, unsigned int bn) {
             inode.addrs[bn] = addr = bcache.balloc(inode.dev);
             return addr;
         }
+        return addr;
     }
     bn -= NDIRECT;
 
@@ -68,10 +69,10 @@ void Icache::read_dinode(Inode &inode) {
 
 Icache::Icache(Bcache &cache):inodes(NINODE), bcache(cache) {
     superBlock = Util::read_superblock(1, bcache);
-    printf("superblock: size %d n_data %d n_inodes %d "
-           "inodestart %d bmap start %d\n", superBlock.size, superBlock.n_data,
-           superBlock.n_inodes, superBlock.inode_start,
-           superBlock.bmap_start);
+    //    printf("superblock: size %d n_data %d n_inodes %d "
+    //           "inodestart %d bmap start %d\n", superBlock.size, superBlock.n_data,
+    //           superBlock.n_inodes, superBlock.inode_start,
+    //           superBlock.bmap_start);
 }
 
 Inode &Icache::ialloc(unsigned int dev, short type) {
@@ -87,7 +88,8 @@ Inode &Icache::ialloc(unsigned int dev, short type) {
         }
         bcache.brelease(buf);
     }
-    cerr << "inode alloc fail" << endl;
+
+    panic("ialloc: inode alloc fail");
 
 }
 
@@ -115,6 +117,7 @@ Inode &Icache::iget(unsigned int dev, unsigned int inum) {
     empty->valid = 0;
 
     read_dinode(*empty);
+    return *empty;
 
 }
 
@@ -157,7 +160,7 @@ int Icache::readi(Inode &inode, char *dest, unsigned int off, unsigned int n) {
     return total_read;
 }
 
-int Icache::writei(Inode &inode, char *src, unsigned int off, unsigned int n) {
+int Icache::writei(Inode &inode, const char *src, unsigned int off, unsigned int n) {
     assert(off >= 0);
     if (off > inode.size || n < 0) {
         return -1;
@@ -180,4 +183,31 @@ int Icache::writei(Inode &inode, char *src, unsigned int off, unsigned int n) {
         iupdate(inode);
     }
     return total_written;
+}
+
+void Icache::idelete(Inode &inode) {
+    // 释放直接寻址的磁盘块
+    for (unsigned int i = 0; i < NDIRECT; ++i) {
+        if (inode.addrs[i]) {
+            bcache.bfree(inode.dev, inode.addrs[i]);
+            inode.addrs[i] = 0;
+        }
+    }
+
+    // 释放间接寻址的磁盘块, 包括释放间接引用的磁盘块和本身间接寻址要占用的那一块磁盘块
+    if (inode.addrs[NDIRECT]) {
+        Buf &buf = bcache.bread(inode.dev, inode.addrs[NDIRECT]);
+        unsigned int *p = reinterpret_cast<unsigned int*>(buf.data);
+        for (int i = 0; i < NINDIRECT; ++i) {
+            if (p[i]) {
+                bcache.bfree(inode.dev, p[i]);
+            }
+        }
+        bcache.brelease(buf);
+        bcache.bfree(inode.dev, inode.addrs[NDIRECT]);
+        inode.addrs[NDIRECT] = 0;
+    }
+    inode.size = 0;
+    iupdate(inode);
+
 }

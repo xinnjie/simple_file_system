@@ -38,6 +38,13 @@ public:
      */
     Inode &ialloc(unsigned int dev, short type);
 
+    /**
+     * 删除指定的 i 节点, 已经该节点包含的磁盘块
+     * **注意** i 节点层不关心该 i节点是文件还是目录（目录涉及到级联删除），会在目录层完成这些功能
+     * @param inode
+     */
+    void idelete(Inode &inode);
+
     Inode &iget(unsigned int dev, unsigned int inum);
 
     /**
@@ -65,7 +72,7 @@ public:
      */
     int readi(Inode &inode, char* dest, unsigned int off, unsigned int n);
 
-    int writei(Inode &inode, char* src, unsigned int off, unsigned int n);
+    int writei(Inode &inode, const char *src, unsigned int off, unsigned int n);
 };
 
 
