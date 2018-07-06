@@ -211,3 +211,8 @@ void Icache::idelete(Inode &inode) {
     iupdate(inode);
 
 }
+
+Inode &Icache::idup(Inode &inode) {
+    inode.ref++;
+    return inode;
+}

@@ -59,6 +59,9 @@ public:
      */
     void iupdate(Inode &inode);
 
+
+    Inode &idup(Inode &inode);
+
     /**
      * 假如 n 大于实际可读的内容，会从 off 开始读出剩余所有内容，返回真实读取的字符数
      * 如果 off 大于可读内容，返回-1

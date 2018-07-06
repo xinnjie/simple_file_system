@@ -11,6 +11,20 @@
 class Dir {
 Icache &icache;
 
+
+    /**
+        * 如果 get_child 设置为 true，child_name 不被设置，直接返回 path 对应的 i 节点
+        * 如果 get_child 被设置为 false, child_name 将被设置为 path 的最后一层名字， 返回父目录对应的 i节点
+        * example：path_name = "a/bb/c"
+        *          true: 返回 c 的 inode
+        *          false: 返回 a/bb 的 inode，并设置 name=“c”
+        * @param path
+        * @param child_name
+        * @param get_child
+        * @return
+        */
+    Inode *namex(const std::string &path, std::string *child_name, bool get_child);
+
 public:
     Dir(Icache &icache);
 
@@ -31,6 +45,13 @@ public:
      * @return
      */
     int insert_into_dir(Inode &dir_inode, std::string name, unsigned int inum);
+
+
+    Inode *lookuppath(const std::string &path);
+
+    Inode *lookup_parent_path(const std::string &path, std::string &child_name);
+
+    Inode *cwd;
 };
 
 
