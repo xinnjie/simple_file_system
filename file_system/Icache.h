@@ -7,7 +7,7 @@
 
 
 #include <vector>
-#include <models/Inode.h>
+#include <structs/Inode.h>
 #include "Bcache.h"
 
 class Icache {

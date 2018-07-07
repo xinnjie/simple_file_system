@@ -2,14 +2,14 @@
 // Created by capitalg on 2018/7/6.
 //
 
-#include <models/DirEntry.h>
+#include <structs/DirEntry.h>
 #include <util/panic.h>
 #include <util/split_path.h>
 #include "Dir.h"
 
 using namespace std;
 
-Inode * Dir::dirlookup(Inode &dir_inode, std::string name) {
+std::pair<Inode*, int> Dir::dirlookup(Inode &dir_inode, const string &name) {
     unsigned int offset = 0;
     DirEntry dir_entry;
     if (dir_inode.type != T_DIR) {
@@ -24,20 +24,20 @@ Inode * Dir::dirlookup(Inode &dir_inode, std::string name) {
         }
         if (dir_entry.name == name) {
             unsigned int inum = dir_entry.inum;
-            return &icache.iget(dir_inode.dev, inum);
+            return make_pair(&icache.iget(dir_inode.dev, inum), offset);
         }
     }
-    return nullptr;
+    return make_pair(nullptr, -1);
 }
 
-Dir::Dir(Icache &icache) : icache(icache) {}
+Dir::Dir(Icache &icache, Inode *cwd) : icache(icache) {}
 
-int Dir::insert_into_dir(Inode &dir_inode, std::string name, unsigned int inum) {
+int Dir::dirlink(Inode &dir_inode, const string &file_name, unsigned int file_inum) {
     if (dir_inode.type != T_DIR) {
-        panic("insert_into_dir: not dir");
+        panic("dirlink: not dir");
     }
 
-    if (dirlookup(dir_inode, name) != nullptr) {
+    if (dirlookup(dir_inode, file_name).first != nullptr) {
         return -1;
     }
 
@@ -46,17 +46,17 @@ int Dir::insert_into_dir(Inode &dir_inode, std::string name, unsigned int inum) 
     DirEntry dir_entry;
     for (offset = 0; offset < dir_inode.size; offset += sizeof(DirEntry)) {
         if (icache.readi(dir_inode, reinterpret_cast<char*>(&dir_entry), offset, sizeof(DirEntry)) != sizeof(DirEntry)) {
-            panic("insert_into_dir: read incompelte");
+            panic("dirlink: read incompelte");
         }
         if (dir_entry.inum == 0) {
             break;
         }
     }
-    assert(name.size() < DIR_NAME_SZ);
-    strcpy(dir_entry.name, name.c_str());
-    dir_entry.inum = inum;
+    assert(file_name.size() < DIR_NAME_SZ);
+    strcpy(dir_entry.name, file_name.c_str());
+    dir_entry.inum = file_inum;
     if (icache.writei(dir_inode, reinterpret_cast<char*>(&dir_entry),  offset, sizeof(DirEntry)) != sizeof(DirEntry)) {
-        panic("insert_into_dir: write dir entry failed");
+        panic("dirlink: write dir entry failed");
     }
     return 0;
 }
@@ -83,7 +83,7 @@ Inode *Dir::namex(const std::string &path, string *child_name, bool get_child) {
         if (!get_child && rest.empty()) {
             return ip;
         }
-        next = dirlookup(*ip, root);
+        next = dirlookup(*ip, root).first;
         icache.iput(*ip);
         ip = next;
         root_and_rest = split_path(rest);
@@ -101,10 +101,11 @@ Inode *Dir::namex(const std::string &path, string *child_name, bool get_child) {
 
 }
 
-Inode *Dir::lookuppath(const string &path) {
+Inode *Dir::namei(const string &path) {
     return namex(path, nullptr, true);
 }
 
-Inode *Dir::lookup_parent_path(const std::string &path, std::string &child_name) {
-    return namex(path, &child_name, false);
+pair<Inode *, string> Dir::nameiparent(const std::string &path) {
+    string child_name;
+    return make_pair(namex(path, &child_name, false), child_name);
 }

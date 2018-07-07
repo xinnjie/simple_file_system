@@ -10,7 +10,7 @@
 #include <Util.h>
 #include <shell/mkfs.h>
 #include "gtest/gtest.h"
-#include "models/Buf.h"
+#include "structs/Buf.h"
 
 
 using namespace std;

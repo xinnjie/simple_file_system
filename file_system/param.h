@@ -34,10 +34,6 @@
 #define BPB (BSIZE*8)
 
 
-#define FD_NONE 0
-#define FD_FD 1
-
-
 #define T_DIR  1   // Directory
 #define T_FILE 2   // File
 

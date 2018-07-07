@@ -26,7 +26,7 @@ Icache &icache;
     Inode *namex(const std::string &path, std::string *child_name, bool get_child);
 
 public:
-    Dir(Icache &icache);
+    Dir(Icache &icache, Inode *cwd);
 
     /**
      * 在指定的目录 i 节点中查找对应名字的 i 节点指针，如果没有找到，返回 null_ptr
@@ -34,22 +34,28 @@ public:
      * @param name
      * @return
      */
-    Inode *dirlookup(Inode &dir_inode, std::string name);
+    std::pair<Inode*, int> dirlookup(Inode &dir_inode, const std::string &name);
 
     /**
      * 将指向 inum i节点的名字为 name 的目录项插入到 dir_inode 目录中
      * 如果目录项中已经含有了相同名字的目录项，返回-1，不然返回0
      * @param dir_inode
-     * @param name
-     * @param inum
+     * @param file_name
+     * @param file_inum
      * @return
      */
-    int insert_into_dir(Inode &dir_inode, std::string name, unsigned int inum);
+    int dirlink(Inode &dir_inode, const std::string &file_name, unsigned int file_inum);
 
 
-    Inode *lookuppath(const std::string &path);
+    Inode *namei(const std::string &path);
 
-    Inode *lookup_parent_path(const std::string &path, std::string &child_name);
+    /**
+     *
+     * @param path
+     * @param child_name
+     * @return
+     */
+    std::pair<Inode *, std::string> nameiparent(const std::string &path);
 
     Inode *cwd;
 };

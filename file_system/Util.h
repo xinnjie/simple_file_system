@@ -6,7 +6,7 @@
 #define FILE_SYSTEM_UTIL_H
 
 
-#include <models/SuperBlock.h>
+#include <structs/SuperBlock.h>
 #include <iostream>
 #include "param.h"
 #include "Bcache.h"

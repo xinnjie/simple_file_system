@@ -7,8 +7,8 @@
 
 
 #include <vector>
-#include <models/SuperBlock.h>
-#include "models/Buf.h"
+#include <structs/SuperBlock.h>
+#include "structs/Buf.h"
 #include "IDEio.h"
 
 class Bcache {

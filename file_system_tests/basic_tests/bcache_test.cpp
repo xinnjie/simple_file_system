@@ -7,7 +7,7 @@
 #include <Bcache.h>
 #include <cstring>
 #include "gtest/gtest.h"
-#include "models/Buf.h"
+#include "structs/Buf.h"
 
 
 using namespace std;

@@ -7,7 +7,7 @@
 
 
 #include <string>
-#include "models/Buf.h"
+#include "structs/Buf.h"
 
 class IDEio {
 private:

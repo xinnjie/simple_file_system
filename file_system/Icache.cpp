@@ -2,9 +2,9 @@
 // Created by capitalg on 2018/7/4.
 //
 
-#include <models/SuperBlock.h>
-#include <models/Buf.h>
-#include <models/Dinode.h>
+#include <structs/SuperBlock.h>
+#include <structs/Buf.h>
+#include <structs/Dinode.h>
 #include <iostream>
 #include <util/panic.h>
 #include "Icache.h"
