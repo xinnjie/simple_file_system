@@ -164,8 +164,7 @@ Inode *SysFile::create(const std::string &path, short type) {
     if (dp == nullptr) {
         return nullptr;
     }
-    // 文件已经存在
-    if ((ip = dir_util.dirlookup(*dp, name).first) != nullptr) {
+    if ((ip = dir_util.dirlookup(*dp, name).first) != nullptr) {     // 文件已经存在
         if (type == T_FILE && ip->type == T_FILE) {
             return ip;
         }
@@ -178,7 +177,6 @@ Inode *SysFile::create(const std::string &path, short type) {
         panic("create: ialloc");
     }
     ip->nlink = 1;
-    icache.iupdate(*ip);
     if (type == T_DIR) { // 如果是目录，需要创建 . 和..
         dp->nlink++; // .. 导致父目录计数+1
         icache.iupdate(*dp);
@@ -186,9 +184,10 @@ Inode *SysFile::create(const std::string &path, short type) {
             panic("create: dots");
         }
     }
-    if (dir_util.dirlink(*dp, name, ip->inum) == -1) {
+    if (dir_util.dirlink(*dp, name, ip->inum) == -1) { // 在父目录中增加这一项
         panic("create: dirlink");
     }
+    icache.iupdate(*ip);
     icache.iput(*dp);
     return ip;
 }
@@ -246,11 +245,12 @@ int SysFile::chdir(const std::string &path) {
         icache.iput(*ip);
         return -1;
     }
-    icache.iput(*cur_proc.cwd);
-    cur_proc.cwd = ip;
+    icache.iput(*cur_proc.cwdi);
+    cur_proc.cwdi = ip;
+    cur_proc.cwd = path;
+
     return 0;
 }
-
 
 
 

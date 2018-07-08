@@ -22,6 +22,7 @@
 #define ROOTINO 1  // root i-number
 #define BSIZE 512  // block size
 #define DIRSIZ 14
+#define SUPERBLOCK_INDEX 1
 
 
 

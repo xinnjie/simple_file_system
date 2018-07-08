@@ -21,11 +21,15 @@ class SysFile {
 
     Dir &dir_util;
 
-
-
     File *argfd(int fd);
-    Inode *create(const std::string &path, short type);
 
+    /**
+     * 创建文件或目录
+     * @param path
+     * @param type 指明文件 T_FILE 或者 目录 T_DIR
+     * @return
+     */
+    Inode *create(const std::string &path, short type);
 
 public:
 
@@ -78,11 +82,20 @@ public:
     int open(const std::string &path, open_option op);
 
 
+    /**
+     * 创建成功返回0，创建失败返回-1
+     * @param path
+     * @return
+     */
     int mkdir(const std::string &path);
 
+    /**
+     * 切换成功返回0，切换失败返回-1
+     * @param path
+     * @return
+     */
     int chdir(const std::string &path);
 
-    
 };
 
 

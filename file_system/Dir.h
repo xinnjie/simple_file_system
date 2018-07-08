@@ -20,10 +20,10 @@ Icache &icache;
         *          false: 返回 a/bb 的 inode，并设置 name=“c”
         * @param path
         * @param child_name
-        * @param get_child
+        * @param through_out
         * @return
         */
-    Inode *namex(const std::string &path, std::string *child_name, bool get_child);
+    Inode *namex(const std::string &path, std::string *child_name, bool through_out);
 
 public:
     Dir(Icache &icache, Inode *cwd);

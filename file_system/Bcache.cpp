@@ -110,3 +110,11 @@ void Bcache::bfree(unsigned dev, unsigned int blockno) {
     bitmap_buf.data[byte_i] &= ~selected_mask;
     brelease(bitmap_buf);
 }
+
+void Bcache::setSuperBlock(const SuperBlock &superBlock) {
+    Bcache::superBlock = superBlock;
+}
+
+const SuperBlock &Bcache::getSuperBlock() const {
+    return superBlock;
+}

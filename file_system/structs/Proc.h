@@ -14,13 +14,15 @@
  */
 class Proc {
 public:
-    Inode *cwd;
+    Inode *cwdi;
+    std::string cwd;
     std::vector<File*> open_files;
+
 
     /**
      * 最多同时打开 NOFILE 个文件
      */
-     explicit Proc(): open_files(NOFILE) {}
+     explicit Proc(Inode &pathi, const std::string &path): open_files(NOFILE), cwdi(&pathi), cwd(path) {}
 };
 
 #endif //FILE_SYSTEM_PROC_H

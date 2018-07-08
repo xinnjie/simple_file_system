@@ -14,7 +14,7 @@ class Icache {
 private:
     std::vector<Inode> inodes;
     Bcache &bcache;
-    SuperBlock superBlock;
+    const SuperBlock &superBlock;
 
 
     inline unsigned int inode_location(int inum);
@@ -26,7 +26,6 @@ private:
      */
     inline unsigned int find_block_location(Inode &inode, unsigned int bn);
 
-    void read_dinode(Inode &inode);
 public:
     explicit Icache(Bcache &cache);
 
@@ -45,6 +44,13 @@ public:
      */
     void idelete(Inode &inode);
 
+    /**
+     * 从磁盘 i 节点区中找到第 inum 个 i 节点，请确保该 i 节点不是空闲的
+     * 获取空闲的 i 节点请使用 Icache::ialloc
+     * @param dev
+     * @param inum
+     * @return 如果节点为空闲节点，会停止工作
+     */
     Inode &iget(unsigned int dev, unsigned int inum);
 
     /**
@@ -59,6 +65,11 @@ public:
      */
     void iupdate(Inode &inode);
 
+    /**
+     * 从磁盘上读出 dinode 的部分
+     * @param inode
+     */
+    void read_dinode(Inode &inode);
 
     Inode &idup(Inode &inode);
 

@@ -12,7 +12,7 @@ TEST(ideio_test, basic) {
 
 
 TEST(ideio_test, construct_test) {
-    IDEio ideio("test.disk", 1000);
+    IDEio ideio("test.disk", 1000, false);
 }
 
 
@@ -20,9 +20,12 @@ TEST(ideio_test, construct_test) {
  * 保证磁盘正常写入
  */
 TEST(ideio_test, read_write) {
-    IDEio ideio("test.disk", 1000);
+    IDEio ideio("test.disk", 1000, false);
     Buf buf;
-    memset(buf.data, 5, BSIZE);
+//    memset(buf.data, 5, BSIZE);
+    for (int i = 0; i < 50; ++i) {
+        *(buf.data+i) = i;
+    }
     buf.dev = 1;
     buf.blockno = 3;
     ideio.write(buf);
@@ -33,11 +36,13 @@ TEST(ideio_test, read_write) {
     readBuf.blockno = 3;
 
     ideio.read(readBuf);
-    EXPECT_EQ(buf.data[100], readBuf.data[100]);
+    for (int i = 0; i < 50; ++i) {
+        EXPECT_EQ(*(readBuf.data+i), i);
+    }
 
 }
 
-TEST(fwrite_test, fwrite_test) {
+TEST(fwrite_test, fwrite) {
 
     FILE *file = fopen("hello.test", "w+");
     char *buffer = (char *) calloc(BSIZE, 1000);

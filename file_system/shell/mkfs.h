@@ -10,6 +10,7 @@
 #include <IDEio.h>
 #include <Bcache.h>
 #include <Icache.h>
+#include <Dir.h>
 
 class mkfs {
     std::unique_ptr<IDEio> ideio_p;

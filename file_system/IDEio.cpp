@@ -38,9 +38,13 @@ void IDEio::read(Buf &buf) {
 
 // 申请磁盘空间最简单的方法是打开文件，写入0，直到容量足够。
 // https://stackoverflow.com/a/7970461/7609067
-IDEio::IDEio(const string &fileName, long blocks_num) : file_name(fileName) {
-    if (file_exist(fileName)) {
-        file = fopen(file_name.data(), "r+");
+IDEio::IDEio(const std::string &fileName, long blocks_num, bool over_write) : file_name(fileName) {
+    if (!over_write) {
+        if (file_exist(fileName)) {
+            file = fopen(file_name.data(), "r+");
+        } else {
+            file = fopen(file_name.data(), "w+");
+        }
     } else {
         file = fopen(file_name.data(), "w+");
     }

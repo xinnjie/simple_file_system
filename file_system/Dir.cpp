@@ -11,7 +11,7 @@ using namespace std;
 
 std::pair<Inode*, int> Dir::dirlookup(Inode &dir_inode, const string &name) {
     unsigned int offset = 0;
-    DirEntry dir_entry;
+    DirEntry dir_entry{};
     if (dir_inode.type != T_DIR) {
         panic("dirlookup: not dir");
     }
@@ -61,17 +61,18 @@ int Dir::dirlink(Inode &dir_inode, const string &file_name, unsigned int file_in
     return 0;
 }
 
-Inode *Dir::namex(const std::string &path, string *child_name, bool get_child) {
+Inode *Dir::namex(const std::string &path, string *child_name, bool through_out) {
     Inode *ip, *next;
+    string nextpath = path;
     if (path[0] == '/') {
         ip = &icache.iget(ROOTDEV, ROOTINO);
+        nextpath = path.substr(1);
     } else {
-//        panic("namex: 相对目录暂时不支持");
         assert(cwd != nullptr);
         ip = &icache.idup(*cwd);
     }
 
-    auto root_and_rest = split_path(path);
+    auto root_and_rest = split_path(nextpath);
     string root = root_and_rest.first;
     string rest = root_and_rest.second;
     while (!root.empty()) {
@@ -80,7 +81,8 @@ Inode *Dir::namex(const std::string &path, string *child_name, bool get_child) {
             icache.iput(*ip);
             return nullptr;
         }
-        if (!get_child && rest.empty()) {
+        if (!through_out && rest.empty()) {
+            *child_name = root;
             return ip;
         }
         next = dirlookup(*ip, root).first;
@@ -90,12 +92,10 @@ Inode *Dir::namex(const std::string &path, string *child_name, bool get_child) {
         root = root_and_rest.first;
         rest = root_and_rest.second;
     }
-    if (get_child) {
+    if (!through_out) {
         icache.iput(*ip);
         return nullptr;
     }
-    assert(child_name != nullptr);
-    *child_name = root;
     return ip;
 
 

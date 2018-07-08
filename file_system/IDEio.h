@@ -15,7 +15,7 @@ private:
     std::FILE *file;
 
 public:
-    IDEio(const std::string &fileName, long blocks_num);
+    IDEio(const std::string &fileName, long blocks_num, bool over_write=false);
 
     virtual ~IDEio();
 

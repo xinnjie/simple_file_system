@@ -7,9 +7,9 @@
 #include <structs/Dinode.h>
 #include <iostream>
 #include <util/panic.h>
+#include <util/read_superblock.h>
 #include "Icache.h"
 #include "Bcache.h"
-#include "Util.h"
 
 using namespace std;
 
@@ -67,22 +67,18 @@ void Icache::read_dinode(Inode &inode) {
 
 
 
-Icache::Icache(Bcache &cache):inodes(NINODE), bcache(cache) {
-    superBlock = Util::read_superblock(1, bcache);
-    //    printf("superblock: size %d n_data %d n_inodes %d "
-    //           "inodestart %d bmap start %d\n", superBlock.size, superBlock.n_data,
-    //           superBlock.n_inodes, superBlock.inode_start,
-    //           superBlock.bmap_start);
+Icache::Icache(Bcache &cache):inodes(NINODE), bcache(cache), superBlock(cache.getSuperBlock()) {
 }
 
 Inode &Icache::ialloc(unsigned int dev, short type) {
-    // todo 第一块 i 节点以后可能会用作根目录
+    // inum = 0不使用
     for (int inum = 1; inum < superBlock.n_inodes; ++inum) {
         Buf &buf = bcache.bread(dev, inode_location(inum));
         Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + inum%IPB);
         if (dinode->type == 0) {  // free
             memset(dinode, 0, sizeof(*dinode));
             dinode->type = type;
+            bcache.bwrite(buf);
             bcache.brelease(buf);
             return iget(dev, inum);
         }
@@ -137,6 +133,7 @@ void Icache::iupdate(Inode &inode) {
     dinode->nlink = inode.nlink;
     dinode->size = inode.size;
     memmove(dinode->addrs, inode.addrs, sizeof(inode.addrs));
+    bcache.bwrite(buf);
     bcache.brelease(buf);
 }
 

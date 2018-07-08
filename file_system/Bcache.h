@@ -18,24 +18,7 @@ private:
     SuperBlock superBlock;
 
     IDEio &ideio;
-    /**
-     * bget 为内部使用的方法，找到对应的磁盘缓冲块返回
-     *  通过 dev, blockno 找到对应的磁盘缓冲块
-     *  如果该块没有被缓冲，会应用 LRU 规则腾出一块空闲的缓冲块，返回该块（但仍然未读入，需要后续读入）
-     * @param dev
-     * @param blockno
-     * @return
-     */
-    Buf &bget(unsigned int dev, unsigned int blockno);
 
-
-    SuperBlock read_superblock(unsigned int dev) {
-        SuperBlock superBlock;
-        Buf &buf = bread(dev, 1);
-        memmove(&superBlock, buf.data, sizeof(superBlock));
-        brelease(buf);
-        return superBlock;
-    }
 
     /**
      * 返回第 index 块磁盘块所在的 bitmap 的块号
@@ -48,6 +31,17 @@ private:
 
 
 public:
+
+    /**
+     * bget 找到对应的磁盘缓冲块返回
+     *  通过 dev, blockno 找到对应的磁盘缓冲块
+     *  如果该块没有被缓冲，会应用 LRU 规则腾出一块空闲的缓冲块，返回该块（但仍然未读入，需要后续读入）
+     * @param dev
+     * @param blockno
+     * @return
+     */
+    Buf &bget(unsigned int dev, unsigned int blockno);
+
     /**
      *  通过链表实现的 LRU
      */
@@ -105,6 +99,18 @@ public:
      */
     void bzero(unsigned int dev, unsigned int block_index);
 
+    void setSuperBlock(const SuperBlock &superBlock);
+
+    const SuperBlock &getSuperBlock() const;
+
+
+    SuperBlock read_superblock(unsigned int dev) {
+        SuperBlock superBlock;
+        Buf &buf = bread(dev, SUPERBLOCK_INDEX);
+        memmove(&superBlock, buf.data, sizeof(superBlock));
+        brelease(buf);
+        return superBlock;
+    }
 
 };
 
