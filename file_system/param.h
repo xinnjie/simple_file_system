@@ -48,7 +48,12 @@
 #define prl_x 0x1
 #define prl_w 0x2
 #define prl_r 0x4
-#define prl_default 0x4;
-#define prl_owner ox6
+//#define prl_default 0x4
+#define prl_owner 0x6
+#define prl_o_x 0x8
+#define prl_o_w 0x10
+#define prl_o_r 0x20
+#define prl_o_default 0x20
+
 
 #endif //OS_BIG_LAB_PARAM_H

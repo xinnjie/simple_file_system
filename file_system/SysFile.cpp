@@ -198,6 +198,8 @@ Inode *SysFile::create(const std::string &path, short type) {
         panic("create: ialloc");
     }
     ip->nlink = 1;
+    ip->uid = cur_proc.cur_user.uid;
+    ip->prl = prl_o_default | prl_owner;
     icache.iupdate(*ip);
     if (type == T_DIR) { // 如果是目录，需要创建 . 和..
         dp->nlink++; // .. 导致父目录计数+1
@@ -227,6 +229,13 @@ int SysFile::open(const std::string &path, open_option op) {
     }
     // 目录不允许写入
     if (ip->type == T_DIR && op != open_option::READ_ONLY) {
+        icache.iput(*ip);
+        return -1;
+    }
+    // fixme 简陋的权限控制    如果不是 root，不是文件拥有者，不能对文件进行写操作
+    if (cur_proc.cur_user.uid != 0 &&
+        (op == open_option::WRITE_ONLY || op == open_option::WRITE_READ) &&
+        ip->uid != cur_proc.cur_user.uid )  {
         icache.iput(*ip);
         return -1;
     }

@@ -132,6 +132,8 @@ void Icache::iupdate(Inode &inode) {
     dinode->type = inode.type;
     dinode->nlink = inode.nlink;
     dinode->size = inode.size;
+    dinode->uid = inode.uid;
+    dinode->prl = inode.prl;
     memmove(dinode->addrs, inode.addrs, sizeof(inode.addrs));
     bcache.bwrite(buf);
     bcache.brelease(buf);

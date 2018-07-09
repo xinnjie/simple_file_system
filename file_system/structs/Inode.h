@@ -9,10 +9,13 @@
 #include <ostream>
 
 struct Inode {
+    // 这部分和 Dinode 保持一致
     short type; // 区分文件、文件目录
     short nlink;  //  有多少个文件目录指向这个 i 节点
     unsigned int size;
     unsigned int addrs[NDIRECT+1];
+    short uid; // 所有者
+    short prl; // 权限
 
     unsigned int dev;
     unsigned int inum;   // i 节点的 index

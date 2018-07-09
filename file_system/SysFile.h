@@ -18,7 +18,6 @@ class SysFile {
     Bcache &bcache;
     Icache &icache;
     Ftable &ftable;
-
     Dir &dir_util;
 
     File *argfd(int fd);

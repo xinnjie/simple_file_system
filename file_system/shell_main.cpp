@@ -66,22 +66,23 @@ Shell make_shell() {
 
 
 int main() {
-//    if (!file_exist(fs_name)) {
-//        format();
-//    }
-    format();
+    if (!file_exist(fs_name)) {
+        format();
+    }
     Shell shell = make_shell();
     string cmds;
-    cout << "$ " ;
+    Proc &cur_proc = *shell.cur_proc_p;
+    User &cur_user = cur_proc.cur_user;
+    cout <<  cur_user.uname << ":" << cur_proc.cwd << " ";
     while (getline(cin, cmds)) {
         if (cmds == "format") { // special command
             format();
             shell = make_shell();
-            cout << "$ " ;
+            cout <<  cur_user.uname << ":" << cur_proc.cwd << " ";
             continue;
         }
         shell.run_cmd(cmds);
-        cout << "$ " ;
+        cout <<  cur_user.uname << ":" << cur_proc.cwd << " ";
     }
 
 //    auto splits = shell.split("hello world apple pear ", " ");
