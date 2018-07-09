@@ -3,17 +3,9 @@
 //
 
 #include <iostream>
+#include <util/file_exist.h>
 #include "IDEio.h"
 using namespace std;
-
-bool file_exist(string file_name) {
-    FILE *f = fopen(file_name.data(), "r");
-    if (f != NULL) {
-        fclose(f);
-        return true;
-    }
-    return false;
-}
 
 
 void IDEio::write(Buf &buf) {
@@ -40,11 +32,7 @@ void IDEio::read(Buf &buf) {
 // https://stackoverflow.com/a/7970461/7609067
 IDEio::IDEio(const std::string &fileName, long blocks_num, bool over_write) : file_name(fileName) {
     if (!over_write) {
-        if (file_exist(fileName)) {
-            file = fopen(file_name.data(), "r+");
-        } else {
-            file = fopen(file_name.data(), "w+");
-        }
+        file = fopen(file_name.data(), file_exist(fileName) ? "r+" : "w+");
     } else {
         file = fopen(file_name.data(), "w+");
     }

@@ -16,7 +16,8 @@ struct Dinode {
     short nlink;  //  有多少个文件目录指向这个 i 节点
     unsigned int size;
     unsigned int addrs[NDIRECT+1];
-    int padding;
+    short uid; // 所有者
+    short prl; // 权限
 };
 
 

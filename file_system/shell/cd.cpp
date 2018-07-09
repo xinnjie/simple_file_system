@@ -24,6 +24,4 @@ int cd::run_cmd(std::vector<std::string> args) {
 }
 
 cd::cd(IDEio &ideio, Bcache &bcache, Icache &icache, Dir &dir, SysFile &sysfile, Proc &cur_proc, Ftable &ftable)
-        : abstract_cmd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable) {
-
-}
+        : abstract_cmd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable) {}

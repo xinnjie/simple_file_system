@@ -6,6 +6,7 @@
 #include <util/panic.h>
 #include "mkfs.h"
 
+using namespace std;
 void mkfs::make_file_system() {
     // 初始化 superblock
 
@@ -14,10 +15,9 @@ void mkfs::make_file_system() {
     mark_in_use(ROOTDEV, 0, nmetablocks);
 
     insert_root();
+    insert_userinfo();
 
 }
-
-
 
 void mkfs::mark_in_use(unsigned int dev, unsigned int blockno) {
     unsigned int bitmap_block = blockno / BPB;
@@ -39,9 +39,9 @@ void mkfs::mark_in_use(unsigned int dev, unsigned int from, unsigned int to) {
 }
 
 mkfs::mkfs(std::string fs_name, bool overwrite) {
-    ideio_p = std::make_unique<IDEio>(fs_name, FSSIZE, overwrite);
-    bcache_p = std::make_unique<Bcache>(*ideio_p);
-    icache_p = std::make_unique<Icache>(*bcache_p);
+    ideio_p = make_unique<IDEio>(fs_name, FSSIZE, overwrite);
+    bcache_p = make_unique<Bcache>(*ideio_p);
+    icache_p = make_unique<Icache>(*bcache_p);
 }
 
 void mkfs::init_superblock() {
@@ -94,5 +94,26 @@ void mkfs::insert_root() {
     root_inode.nlink = 1;
     icache.iupdate(root_inode);
     icache.iput(root_inode);
+}
+
+void mkfs::insert_userinfo() {
+    Inode &root = icache_p->iget(ROOTDEV, ROOTINO);
+    User user(0, "root", "root");
+    cur_proc_p = make_unique<Proc>(root, "/", *icache_p, user);
+    dir_p = make_unique<Dir>(*icache_p, *cur_proc_p);
+    ftable_p = make_unique<Ftable>(*icache_p);
+    sysfile_p = make_unique<SysFile>(*cur_proc_p, *bcache_p, *icache_p, *ftable_p, *dir_p);
+    SysFile &sysfile = *sysfile_p;
+    assert(sysfile.mkdir("/users") != -1);
+    assert(sysfile.mkdir("/users/root") != -1);
+    assert(sysfile.mkdir("/etc") != -1);
+    int fd = 0;
+    fd = sysfile.open("/etc/.passwd", open_option::CREATE);
+    char *root_info = "root root|";
+    assert(sysfile.write(fd, root_info, strlen(root_info) + 1) == (strlen(root_info) + 1));
+
+    assert(fd != -1);
+    assert(sysfile.close(fd) != -1) ;
+
 }
 

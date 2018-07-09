@@ -11,11 +11,17 @@
 #include <Bcache.h>
 #include <Icache.h>
 #include <Dir.h>
+#include <SysFile.h>
 
 class mkfs {
     std::unique_ptr<IDEio> ideio_p;
     std::unique_ptr<Bcache> bcache_p;
     std::unique_ptr<Icache> icache_p;
+    std::unique_ptr<Dir> dir_p;
+    std::unique_ptr<SysFile> sysfile_p;
+    std::unique_ptr<Proc> cur_proc_p;
+    std::unique_ptr<Ftable> ftable_p;
+
 
     SuperBlock superBlock;
 
@@ -31,6 +37,11 @@ class mkfs {
     void mark_in_use(unsigned int dev, unsigned int blockno);
 
     void insert_root();
+
+    /**
+     * 包含建立 user 目录，建立 root 用户，建立 .pwd 文件
+     */
+    void insert_userinfo();
     unsigned int nmetablocks;
 
 public:

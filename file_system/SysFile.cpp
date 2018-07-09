@@ -243,7 +243,7 @@ int SysFile::open(const std::string &path, open_option op) {
     f->ip = ip;
     f->offset = 0;
     f->readable = (op != open_option::WRITE_ONLY);
-    f->writable = (op == open_option::WRITE_ONLY || op == open_option::WRITE_READ);
+    f->writable = (op == open_option::WRITE_ONLY || op == open_option::WRITE_READ || op == open_option::CREATE);
     return fd;
 }
 

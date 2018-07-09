@@ -12,7 +12,6 @@ class cd : public   abstract_cmd{
 public:
     cd(IDEio &ideio, Bcache &bcache, Icache &icache, Dir &dir, SysFile &sysfile, Proc &cur_proc, Ftable &ftable);
 
-private:
     int run_cmd(std::vector<std::string> args) override;
 };
 

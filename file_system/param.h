@@ -41,5 +41,14 @@
 
 #define DIR_NAME_SZ 12
 
-#define FS_NAME "fs.all"
+//#define FS_NAME "fs.all"
+
+
+// 读写权限, 执行不使用
+#define prl_x 0x1
+#define prl_w 0x2
+#define prl_r 0x4
+#define prl_default 0x4;
+#define prl_owner ox6
+
 #endif //OS_BIG_LAB_PARAM_H

@@ -17,7 +17,8 @@ Shell::Shell(const std::string &fs_name): fs_name(fs_name) {
     bcache_p = make_unique<Bcache>(*ideio_p);
     icache_p = make_unique<Icache>(*bcache_p);
     Inode &root = icache_p->iget(ROOTDEV, ROOTINO);
-    cur_proc_p = make_unique<Proc>(root, "/", *icache_p);
+    User user(0, "root", "root");
+    cur_proc_p = make_unique<Proc>(root, "/", *icache_p, user);
     dir_p = make_unique<Dir>(*icache_p, *cur_proc_p);
     ftable_p = make_unique<Ftable>(*icache_p);
     sysfile_p = make_unique<SysFile>(*cur_proc_p, *bcache_p, *icache_p, *ftable_p, *dir_p);

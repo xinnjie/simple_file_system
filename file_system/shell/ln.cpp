@@ -22,7 +22,7 @@ int ln::run_cmd(std::vector<std::string> args) {
     }
     string new_file_name = args[0];
     string old_file_name = args[1];
-    if (sysfile.link(old_file_name, new_file_name) == -1) {
+    if (sysfile.link(new_file_name, old_file_name) == -1) {
         cerr << "ln: " << old_file_name << " or " <<  new_file_name << " is not accessible" << endl;
         return -1;
     }

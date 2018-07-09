@@ -11,12 +11,15 @@
 #include <shell/ln.h>
 #include <shell/cat.h>
 #include <shell/touch.h>
-
+#include <util/file_exist.h>
 
 
 #include "shell/Shell.h"
 
 using namespace std;
+
+string fs_name = "fs.disk";
+
 
 void register_commands(Shell &shell) {
     IDEio &ideio = *shell.ideio_p;
@@ -26,6 +29,7 @@ void register_commands(Shell &shell) {
     SysFile &sysfile = *shell.sysfile_p;
     Proc &cur_proc = *shell.cur_proc_p;
     Ftable &ftable = *shell.ftable_p;
+    
 
     shell.register_cmd("cd", new cd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("pwd", new pwd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
@@ -39,27 +43,39 @@ void register_commands(Shell &shell) {
 
 
 }
-
-
-int main() {
+void format() {
     cout << "init file system" << endl;
-    string fs_name = "fs.disk";
     mkfs *mkfs0 = new mkfs(fs_name, true);
     mkfs0->make_file_system();
     delete mkfs0;
     cout << "init file system completed" << endl;
-
+}
+Shell make_shell() {
     Shell shell(fs_name);
     cout << "runnng file system shell" << endl;
 
     cout << "registering commands" << endl;
     register_commands(shell);
     cout << "registering commands completed" << endl;
+    return shell;
+}
 
 
+int main() {
+//    if (!file_exist(fs_name)) {
+//        format();
+//    }
+    format();
+    Shell shell = make_shell();
     string cmds;
     cout << "$ " ;
     while (getline(cin, cmds)) {
+        if (cmds == "format") { // special command
+            format();
+            shell = make_shell();
+            cout << "$ " ;
+            continue;
+        }
         shell.run_cmd(cmds);
         cout << "$ " ;
     }

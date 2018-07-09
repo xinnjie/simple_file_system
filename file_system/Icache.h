@@ -32,7 +32,7 @@ public:
     /**
      * 从磁盘中找到一个空闲的i节点，并将该 i 节点类型设置为 type
      * @param dev
-     * @param type FD_NONE 表示空闲， FD_INODE 表示文件 fixme 理解问题？
+     * @param type 0 表示空闲， T_FILE 表示文件 T_DIR 表示目录
      * @return
      */
     Inode &ialloc(unsigned int dev, short type);
