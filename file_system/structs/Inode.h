@@ -6,6 +6,7 @@
 #define FILE_SYSTEM_INODE_H
 
 #include <param.h>
+#include <ostream>
 
 struct Inode {
     short type; // 区分文件、文件目录
@@ -17,5 +18,10 @@ struct Inode {
     unsigned int inum;   // i 节点的 index
     int ref;   // 现在被进程打开多少次
     int valid;   // i 节点是否已经从磁盘读出
+
+    friend std::ostream &operator<<(std::ostream &os, const Inode &inode) {
+        os << "type: " << inode.type << " size: " << inode.size << " inum: " << inode.inum;
+        return os;
+    }
 };
 #endif //FILE_SYSTEM_INODE_H

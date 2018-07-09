@@ -8,6 +8,24 @@
 
 
 using namespace std;
+
+string path_concate(const string &base_path, const string &relative_path) {
+    // fixme cd 时有很多特殊情况 cd ..   cd ../hello   cd .
+    if (relative_path == "..") {
+        int i = base_path.find_last_of('/');
+        string result{base_path.cbegin(), base_path.cbegin() + i};
+        if (result.empty()) {
+            return "/";
+        }
+        return result;
+    }
+
+    if (*(base_path.end()-1) == '/') {
+        return base_path + relative_path;
+    }
+    return base_path + "/" + relative_path;
+}
+
 File *SysFile::argfd(int fd) {
     if (fd < 0 || fd >= NOFILE) {
         return nullptr;
@@ -177,17 +195,17 @@ Inode *SysFile::create(const std::string &path, short type) {
         panic("create: ialloc");
     }
     ip->nlink = 1;
+    icache.iupdate(*ip);
     if (type == T_DIR) { // 如果是目录，需要创建 . 和..
         dp->nlink++; // .. 导致父目录计数+1
         icache.iupdate(*dp);
-        if (dir_util.dirlink(*ip, "..", ip->inum) == -1 || dir_util.dirlink(*ip, ".", ip->inum) == -1) {
+        if (dir_util.dirlink(*ip, "..", dp->inum) == -1 || dir_util.dirlink(*ip, ".", ip->inum) == -1) {
             panic("create: dots");
         }
     }
     if (dir_util.dirlink(*dp, name, ip->inum) == -1) { // 在父目录中增加这一项
         panic("create: dirlink");
     }
-    icache.iupdate(*ip);
     icache.iput(*dp);
     return ip;
 }
@@ -245,9 +263,12 @@ int SysFile::chdir(const std::string &path) {
         icache.iput(*ip);
         return -1;
     }
-    icache.iput(*cur_proc.cwdi);
-    cur_proc.cwdi = ip;
-    cur_proc.cwd = path;
+    cur_proc.setCwdi(*ip);
+    if (path[0] == '/') {
+        cur_proc.cwd = path;
+    } else {
+        cur_proc.cwd = path_concate(cur_proc.cwd, path);
+    }
 
     return 0;
 }

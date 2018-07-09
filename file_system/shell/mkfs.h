@@ -31,13 +31,13 @@ class mkfs {
     void mark_in_use(unsigned int dev, unsigned int blockno);
 
     void insert_root();
+    unsigned int nmetablocks;
 
 public:
-    mkfs(std::string fs_name);
+    explicit mkfs(std::string fs_name, bool overwrite = false);
 
     void make_file_system();
 
-    unsigned int nmetablocks;
 };
 
 

@@ -19,7 +19,7 @@ class inode_test : public ::testing::Test {
 protected:
     void SetUp() override {
         string test_name = "inode_test";
-        mkfs *mkfs0 = new mkfs(test_name);
+        mkfs *mkfs0 = new mkfs(test_name, false);
         mkfs0->make_file_system();
         delete mkfs0;
 

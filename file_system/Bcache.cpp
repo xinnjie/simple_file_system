@@ -82,6 +82,7 @@ unsigned int Bcache::balloc(unsigned int dev) {
             int select_mask = 1 << (bitmap_index % 8);
             if ((buf.data[bitmap_index/8] & select_mask) == 0) {// 空闲块
                 buf.data[bitmap_index/8] |= select_mask; // 置为已使用
+                bwrite(buf);
                 brelease(buf);
                 bzero(dev, block_index + bitmap_index);
                 return block_index + bitmap_index;
@@ -108,6 +109,7 @@ void Bcache::bfree(unsigned dev, unsigned int blockno) {
         panic("bfree: freeing free block");
     }
     bitmap_buf.data[byte_i] &= ~selected_mask;
+    bwrite(bitmap_buf);
     brelease(bitmap_buf);
 }
 

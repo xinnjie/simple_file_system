@@ -30,7 +30,27 @@ std::pair<Inode*, int> Dir::dirlookup(Inode &dir_inode, const string &name) {
     return make_pair(nullptr, -1);
 }
 
-Dir::Dir(Icache &icache, Inode *cwd) : icache(icache) {}
+std::vector<DirEntry> Dir::dirls(Inode &dir_inode) {
+    vector<DirEntry> dir_entries;
+    unsigned int offset = 0;
+    DirEntry dir_entry{};
+    if (dir_inode.type != T_DIR) {
+        panic("dirlookup: not dir");
+    }
+    for (offset = 0; offset < dir_inode.size; offset += sizeof(DirEntry)) {
+        if (icache.readi(dir_inode, reinterpret_cast<char*>(&dir_entry), offset, sizeof(dir_entry)) != sizeof(dir_entry)) {
+            panic("dirlookup: incomplete read");
+        }
+        if (dir_entry.inum == 0) { // 该块为空
+            continue;
+        }
+        dir_entries.push_back(dir_entry);
+    }
+    return dir_entries;
+}
+
+
+Dir::Dir(Icache &icache, Proc &cur_proc) : icache(icache), cur_proc(cur_proc) {}
 
 int Dir::dirlink(Inode &dir_inode, const string &file_name, unsigned int file_inum) {
     if (dir_inode.type != T_DIR) {
@@ -68,8 +88,8 @@ Inode *Dir::namex(const std::string &path, string *child_name, bool through_out)
         ip = &icache.iget(ROOTDEV, ROOTINO);
         nextpath = path.substr(1);
     } else {
-        assert(cwd != nullptr);
-        ip = &icache.idup(*cwd);
+//        assert(cwd != nullptr);
+        ip = &icache.idup(cur_proc.getCwdi());
     }
 
     auto root_and_rest = split_path(nextpath);

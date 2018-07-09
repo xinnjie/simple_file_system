@@ -10,4 +10,4 @@ add_subdirectory(file_system)
 add_subdirectory(file_system_tests)
 
 
-SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
+#SET(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")

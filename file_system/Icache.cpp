@@ -52,7 +52,7 @@ unsigned int Icache::find_block_location(Inode &inode, unsigned int bn) {
 void Icache::read_dinode(Inode &inode) {
     if (inode.valid == 0) {
         Buf &buf = bcache.bread(inode.dev, inode_location(inode.inum));
-        Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + inode.inum % IPB);
+        Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + (inode.inum % IPB)* sizeof(Dinode));
         inode.type = dinode->type;
         inode.nlink = dinode->nlink;
         inode.size = dinode->size;
@@ -74,7 +74,7 @@ Inode &Icache::ialloc(unsigned int dev, short type) {
     // inum = 0不使用
     for (int inum = 1; inum < superBlock.n_inodes; ++inum) {
         Buf &buf = bcache.bread(dev, inode_location(inum));
-        Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + inum%IPB);
+        Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + (inum%IPB)* sizeof(Dinode));
         if (dinode->type == 0) {  // free
             memset(dinode, 0, sizeof(*dinode));
             dinode->type = type;
@@ -128,7 +128,7 @@ void Icache::iput(Inode &inode) {
 
 void Icache::iupdate(Inode &inode) {
     Buf &buf = bcache.bread(inode.dev, inode_location(inode.inum));
-    Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + inode.inum%IPB);
+    Dinode *dinode = reinterpret_cast<Dinode*>(buf.data + (inode.inum%IPB)* sizeof(Dinode));
     dinode->type = inode.type;
     dinode->nlink = inode.nlink;
     dinode->size = inode.size;
@@ -171,6 +171,7 @@ int Icache::writei(Inode &inode, const char *src, unsigned int off, unsigned int
         Buf &buf = bcache.bread(inode.dev, find_block_location(inode, off / BSIZE));
         write_once = min(n-total_written, BSIZE - (off%BSIZE));
         memmove(buf.data + (off%BSIZE), src, write_once);
+        bcache.bwrite(buf);
         bcache.brelease(buf);
     }
 

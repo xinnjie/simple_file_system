@@ -13,7 +13,6 @@ void mkfs::make_file_system() {
     // 将所有 metablocks 都标记为已经占用
     mark_in_use(ROOTDEV, 0, nmetablocks);
 
-    // todo 根目录
     insert_root();
 
 }
@@ -39,8 +38,8 @@ void mkfs::mark_in_use(unsigned int dev, unsigned int from, unsigned int to) {
     }
 }
 
-mkfs::mkfs(std::string fs_name) {
-    ideio_p = std::make_unique<IDEio>(fs_name, FSSIZE, true);
+mkfs::mkfs(std::string fs_name, bool overwrite) {
+    ideio_p = std::make_unique<IDEio>(fs_name, FSSIZE, overwrite);
     bcache_p = std::make_unique<Bcache>(*ideio_p);
     icache_p = std::make_unique<Icache>(*bcache_p);
 }
@@ -68,7 +67,7 @@ void mkfs::init_superblock() {
     bcache.setSuperBlock(superBlock);
 
 
-    printf("nmeta %d (boot, super, inode blocks %u, bitmap blocks %u) blocks %d total %d\n",
+    printf("nmeta %d (boot, super, inode blocks %u, bitmap blocks %u) blocks %d total %d \n\n",
            nmetablocks, ninodeblocks, nbitmap, nblocks, FSSIZE);
 }
 
@@ -78,7 +77,7 @@ void mkfs::insert_root() {
     assert(root_inode.inum == ROOTINO);
     assert(root_inode.dev == ROOTDEV);
 
-    DirEntry dir_entry;
+    DirEntry dir_entry{};
     dir_entry.inum =  ROOTINO;
     strcpy(dir_entry.name, ".");
 

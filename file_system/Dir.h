@@ -6,6 +6,8 @@
 #define FILE_SYSTEM_DIR_H
 
 
+#include <structs/DirEntry.h>
+#include <structs/Proc.h>
 #include "Icache.h"
 
 class Dir {
@@ -26,7 +28,7 @@ Icache &icache;
     Inode *namex(const std::string &path, std::string *child_name, bool through_out);
 
 public:
-    Dir(Icache &icache, Inode *cwd);
+    Dir(Icache &icache, Proc &cur_proc);
 
     /**
      * 在指定的目录 i 节点中查找对应名字的 i 节点指针，如果没有找到，返回 null_ptr
@@ -35,6 +37,8 @@ public:
      * @return
      */
     std::pair<Inode*, int> dirlookup(Inode &dir_inode, const std::string &name);
+
+    std::vector<DirEntry> dirls(Inode &dir_inode);
 
     /**
      * 将指向 inum i节点的名字为 name 的目录项插入到 dir_inode 目录中
@@ -57,7 +61,7 @@ public:
      */
     std::pair<Inode *, std::string> nameiparent(const std::string &path);
 
-    Inode *cwd;
+    Proc &cur_proc;
 };
 
 
