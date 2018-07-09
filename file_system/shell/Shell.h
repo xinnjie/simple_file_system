@@ -31,14 +31,6 @@ public:
 
     void deregister_cmd(const std::string &command_name);
     /**
-     * 方便的 split 来自https://stackoverflow.com/a/9437426/7609067
-     * @param input
-     * @param regex
-     * @return
-     */
-    static std::vector<std::string> split(const std::string &input, const std::string &regex);
-
-    /**
      * 将输入命令 token 化，将字符串以空格为间隔分开（除了引号内的空格）
      * 比较特殊的规则有： 双引号内的内容视为一个 token，
      *

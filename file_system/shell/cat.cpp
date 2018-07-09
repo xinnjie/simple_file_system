@@ -37,9 +37,9 @@ int cat::run_cmd(std::vector<std::string> args) {
         }
 
 
-        int n = sysfile.write(fd, content.c_str(), content.size() + 1);
-        if (n != content.size() + 1) {
-            cerr << "cat: " << n << "written, left " << content.size() + 1 << " to write" << endl;
+        int n = sysfile.write(fd, content.c_str(), content.size());
+        if (n != content.size()) {
+            cerr << "cat: " << n << "written, left " << content.size()  << " to write" << endl;
         }
 
         if (sysfile.close(fd) == -1) {

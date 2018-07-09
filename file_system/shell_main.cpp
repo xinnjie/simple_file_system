@@ -12,6 +12,8 @@
 #include <shell/cat.h>
 #include <shell/touch.h>
 #include <util/file_exist.h>
+#include <shell/useradd.h>
+#include <shell/login.h>
 
 
 #include "shell/Shell.h"
@@ -29,7 +31,7 @@ void register_commands(Shell &shell) {
     SysFile &sysfile = *shell.sysfile_p;
     Proc &cur_proc = *shell.cur_proc_p;
     Ftable &ftable = *shell.ftable_p;
-    
+
 
     shell.register_cmd("cd", new cd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("pwd", new pwd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
@@ -39,6 +41,8 @@ void register_commands(Shell &shell) {
     shell.register_cmd("ln", new ln(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("cat", new cat(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("touch", new touch(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("useradd", new useradd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("login", new login(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
 
 
 

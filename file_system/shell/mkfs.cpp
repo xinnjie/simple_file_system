@@ -109,7 +109,7 @@ void mkfs::insert_userinfo() {
     assert(sysfile.mkdir("/etc") != -1);
     int fd = 0;
     fd = sysfile.open("/etc/.passwd", open_option::CREATE);
-    char *root_info = "root root|";
+    char *root_info = "0 root root|";
     assert(sysfile.write(fd, root_info, strlen(root_info) + 1) == (strlen(root_info) + 1));
 
     assert(fd != -1);

@@ -3,6 +3,7 @@
 //
 #include <regex>
 #include <iostream>
+#include <util/split.h>
 #include "Shell.h"
 
 using namespace std;
@@ -24,14 +25,7 @@ Shell::Shell(const std::string &fs_name): fs_name(fs_name) {
     sysfile_p = make_unique<SysFile>(*cur_proc_p, *bcache_p, *icache_p, *ftable_p, *dir_p);
 }
 
-std::vector<std::string> Shell::split(const std::string &input, const std::string &regex) {
-    // passing -1 as the submatch index parameter performs splitting
-    std::regex re(regex);
-    std::sregex_token_iterator
-            first{input.begin(), input.end(), re, -1},
-            last;
-    return {first, last};
-}
+
 
 void Shell::run_cmd(const std::string &cmds) {
     auto args = tokenize(cmds);
@@ -68,7 +62,7 @@ std::vector<std::string> Shell::tokenize(const std::string &command_str) {
     }
     quotation_indices.push_back(command_str.size());
     if (quotation_indices.size() == 2) {
-        return Shell::split(command_str, " ");
+        return split(command_str, " ");
     }
     if (quotation_indices.size() % 2 != 0) {
         return  {};
@@ -85,7 +79,7 @@ std::vector<std::string> Shell::tokenize(const std::string &command_str) {
             } else {
                 sub_str = sub_str.substr(0, sub_str.size()-1);
             }
-            auto split_space = Shell::split(sub_str, " ");
+            auto split_space = split(sub_str, " ");
             split_space.erase(std::remove_if(split_space.begin(), split_space.end(), [](string x){
                 return x == "" || x == " ";
             }), split_space.end());
