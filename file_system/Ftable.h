@@ -31,7 +31,7 @@ public:
 
     int fileread(File &file, char *dest, int n);
 
-    int filewrite(File &file, char *src, int n);
+    int filewrite(File &file, const char *src, int n);
 
     FileStat stat(const File &file);
 

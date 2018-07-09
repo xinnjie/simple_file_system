@@ -11,6 +11,8 @@
 class cat: public abstract_cmd {
 
 public:
+    cat(IDEio &ideio, Bcache &bcache, Icache &icache, Dir &dir, SysFile &sysfile, Proc &cur_proc, Ftable &ftable);
+
     /**
      * examples:
      * cat example.txt

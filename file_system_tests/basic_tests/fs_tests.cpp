@@ -177,7 +177,22 @@ TEST_F(fs_test, dir_test) {
     EXPECT_EQ(sysfile.chdir("/"), 0);
     EXPECT_EQ(cur_proc.cwd, "/");
 
-
 }
 
 
+TEST_F(fs_test, file_operation_test) {
+    SysFile &sysfile = *sysfile_p;
+    int fd = sysfile.open("helo.txt", open_option::CREATE);
+    EXPECT_NE(fd, -1);
+    EXPECT_EQ(sysfile.close(fd), 0);
+    fd = sysfile.open("helo.txt", open_option::WRITE_ONLY);
+    char *content = "hello, world!";
+    int n = sysfile.write(fd, content, strlen(content) + 1);
+    EXPECT_EQ(n, strlen(content) + 1);
+
+    int read_fd = sysfile.open("helo.txt", open_option::READ_ONLY);
+    char buffer[128];
+    n = sysfile.read(read_fd, buffer, 128);
+    EXPECT_NE(n, -1);
+    EXPECT_STREQ(buffer, "hello, world!");
+}

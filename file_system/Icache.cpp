@@ -159,7 +159,7 @@ int Icache::readi(Inode &inode, char *dest, unsigned int off, unsigned int n) {
 
 int Icache::writei(Inode &inode, const char *src, unsigned int off, unsigned int n) {
     assert(off >= 0);
-    if (off > inode.size || n < 0) {
+    if (off > inode.size) {
         return -1;
     }
     if (off + n > MAXFILE*BSIZE) {

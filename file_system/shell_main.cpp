@@ -7,6 +7,13 @@
 #include <shell/pwd.h>
 #include <shell/mkdir.h>
 #include <shell/ls.h>
+#include <shell/rm.h>
+#include <shell/ln.h>
+#include <shell/cat.h>
+#include <shell/touch.h>
+
+
+
 #include "shell/Shell.h"
 
 using namespace std;
@@ -24,6 +31,11 @@ void register_commands(Shell &shell) {
     shell.register_cmd("pwd", new pwd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("mkdir", new mkdir(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("ls", new ls(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("rm", new rm(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("ln", new ln(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("cat", new cat(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("touch", new touch(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+
 
 
 }
@@ -46,8 +58,10 @@ int main() {
 
 
     string cmds;
+    cout << "$ " ;
     while (getline(cin, cmds)) {
         shell.run_cmd(cmds);
+        cout << "$ " ;
     }
 
 //    auto splits = shell.split("hello world apple pear ", " ");

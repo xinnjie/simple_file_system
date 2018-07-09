@@ -12,7 +12,7 @@ File &Ftable::filedup(File &file) {
     return file;
 }
 
-File * Ftable::filealloc(void) {
+File * Ftable::filealloc() {
     for (int i = 0; i < ftable.size(); ++i) {
         if (ftable[i].ref == 0) {
             ftable[i].ref = 1;
@@ -52,7 +52,7 @@ int Ftable::fileread(File &file, char *dest, int n) {
     panic("fileread");
 }
 
-int Ftable::filewrite(File &file, char *src, int n) {
+int Ftable::filewrite(File &file, const char *src, int n) {
     if (!file.writable) {
         return -1;
     }

@@ -50,8 +50,13 @@ public:
 
     int read(int fd, char* dest, int n);
 
-    int write(int fd, char* src, int n);
+    int write(int fd, const char *src, int n);
 
+    /**
+     * 关闭文件，关闭失败返回-1
+     * @param fd
+     * @return
+     */
     int close(int fd);
 
     /**
@@ -63,6 +68,11 @@ public:
      */
     int link(const std::string &new_name, const std::string &path);
 
+    /**
+     * 删除链接，把对应的 i 节点引用计数-1, 当引用计数到达0时，会把 i 节点置零（其中类型设为0，表示空闲），达到删除文件的效果
+     * @param path
+     * @return
+     */
     int unlink(const std::string &path);
 
     /**
@@ -74,7 +84,7 @@ public:
 
 
     /**
-     * 返回打开文件的 fd
+     * 返回打开文件的 fd, 打开失败返回-1
      * @param path
      * @param op
      * @return

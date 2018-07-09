@@ -3,9 +3,12 @@
 //
 
 #include <util/split_path.h>
+#include <shell/Shell.h>
 #include "gtest/gtest.h"
+#include "gmock/gmock.h"
 
 using namespace std;
+using namespace testing;
 
 /*
  * "a/bb/c" -> <"a", "bb/c">
@@ -31,4 +34,17 @@ TEST(split_path_test, basic3) {
     auto p = split_path(path);
     EXPECT_EQ(p.first, "");
     EXPECT_EQ(p.second, "");
+}
+
+TEST(split_command, basic1) {
+    string command = "cat \"hello , world\" > hello.txt";
+    auto splits = Shell::tokenize(command);
+    ASSERT_THAT(splits, ElementsAre("cat", "hello , world", ">", "hello.txt"));
+
+}
+TEST(split_command, basic2) {
+    string command = "cat \"hello , world\" \"he   sfhkjhefe f\" > hello.txt";
+    auto splits = Shell::tokenize(command);
+    ASSERT_THAT(splits, ElementsAre("cat", "hello , world", "he   sfhkjhefe f" , ">", "hello.txt"));
+
 }

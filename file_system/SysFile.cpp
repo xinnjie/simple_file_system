@@ -65,7 +65,7 @@ int SysFile::read(int fd, char *dest, int n) {
     return ftable.fileread(*f, dest, n);
 }
 
-int SysFile::write(int fd, char *src, int n) {
+int SysFile::write(int fd, const char *src, int n) {
     File *f;
     if ((f = argfd(fd))== nullptr) {
         return -1;
@@ -95,7 +95,7 @@ int SysFile::link(const std::string &new_name, const std::string &path) {
 
     auto temp = dir_util.nameiparent(new_name);
     Inode *parent_ip = temp.first;
-    string &child_name = temp.second;
+    string child_name = temp.second;
 
     if (parent_ip == nullptr || child_name.empty()) {
         return -1;
@@ -143,7 +143,7 @@ int SysFile::unlink(const string &path) {
         return -1;
     }
 
-    DirEntry dirEntry;
+    DirEntry dirEntry{};
     if (icache.writei(*dp, reinterpret_cast<char*>(&dirEntry), offset, sizeof(dirEntry)) != sizeof(dirEntry)) {
         panic("unlink: writei incomplete");
     }
@@ -155,12 +155,15 @@ int SysFile::unlink(const string &path) {
     }
     icache.iput(*dp);
     ip->nlink--;
+    if (ip->nlink == 0) {
+        memset(ip, 0, sizeof(*ip));
+    }
     icache.iupdate(*ip);
     return 0;
 }
 
 bool SysFile::isdirempty(Inode &dir_inode) {
-    DirEntry dirEntry;
+    DirEntry dirEntry{};
     // 跳过头两个 "."  ".."
     for (int off = 2*sizeof(DirEntry); off < dir_inode.size; off+= sizeof(DirEntry)) {
         if (icache.readi(dir_inode, reinterpret_cast<char*>(&dirEntry), off, sizeof(DirEntry)) != sizeof(DirEntry)) {
@@ -236,12 +239,11 @@ int SysFile::open(const std::string &path, open_option op) {
         return -1;
     }
 
-
     f->type = fd_type::FD_INODE;
     f->ip = ip;
     f->offset = 0;
-    f->readable = !(op == open_option::WRITE_ONLY);
-    f->readable = (op == open_option::WRITE_ONLY || op == open_option::WRITE_READ);
+    f->readable = (op != open_option::WRITE_ONLY);
+    f->writable = (op == open_option::WRITE_ONLY || op == open_option::WRITE_READ);
     return fd;
 }
 

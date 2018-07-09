@@ -36,7 +36,16 @@ public:
      * @param regex
      * @return
      */
-    std::vector<std::string> split(const std::string &input, const std::string &regex);
+    static std::vector<std::string> split(const std::string &input, const std::string &regex);
+
+    /**
+     * 将输入命令 token 化，将字符串以空格为间隔分开（除了引号内的空格）
+     * 比较特殊的规则有： 双引号内的内容视为一个 token，
+     *
+     * @param command_str
+     * @return
+     */
+    static std::vector<std::string> tokenize(const std::string &command_str);
 
 
     std::unique_ptr<IDEio> ideio_p;

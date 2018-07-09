@@ -9,7 +9,10 @@
 #include "abstract_cmd.h"
 
 class rm: public abstract_cmd {
+public:
+    rm(IDEio &ideio, Bcache &bcache, Icache &icache, Dir &dir, SysFile &sysfile, Proc &cur_proc, Ftable &ftable);
 
+    int run_cmd(std::vector<std::string> args) override;
 };
 
 
