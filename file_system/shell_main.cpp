@@ -14,6 +14,8 @@
 #include <util/file_exist.h>
 #include <shell/useradd.h>
 #include <shell/login.h>
+#include <shell/mv.h>
+
 
 
 #include "shell/Shell.h"
@@ -44,6 +46,7 @@ void register_commands(Shell &shell) {
     shell.register_cmd("useradd", new useradd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("login", new login(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
 
+    shell.register_cmd("mv", new mv(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
 
 
 }
