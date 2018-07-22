@@ -10,4 +10,8 @@
 与xv6相比，我去掉了日志模块已经多进程的支持，增加了一个简单的权限控制的功能。
 
 # 运行
-cd file_system && make run_shell
+
+    cd file_system && cmake && make run_shell
+    
+    
+    
