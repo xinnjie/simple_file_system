@@ -14,6 +14,8 @@
 #include <util/file_exist.h>
 #include <shell/useradd.h>
 #include <shell/login.h>
+#include <shell/logout.h>
+
 #include <shell/mv.h>
 
 
@@ -45,6 +47,7 @@ void register_commands(Shell &shell) {
     shell.register_cmd("touch", new touch(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("useradd", new useradd(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
     shell.register_cmd("login", new login(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
+    shell.register_cmd("logout", new logout(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
 
     shell.register_cmd("mv", new mv(ideio, bcache, icache, dir, sysfile, cur_proc, ftable));
 
@@ -76,8 +79,22 @@ int main() {
     string cmds;
     Proc &cur_proc = *shell.cur_proc_p;
     User &cur_user = cur_proc.cur_user;
+//    cur_user.uname = "";
+//    while (cur_user.uname == "") {
+//        cerr << "please login: " << endl;
+//        string name, pass;
+//        cin >> name >> pass;
+//        shell.get_cmd("login").run_cmd({name, pass});
+//    }
     cout <<  cur_user.uname << ":" << cur_proc.cwd << " ";
     while (getline(cin, cmds)) {
+//        while (cur_user.uname == "") {
+//            cerr << "please login: " << endl;
+//            string name, pass;
+//            cin >> name >> pass;
+//            shell.get_cmd("login").run_cmd({name, pass});
+//        }
+//        if (cmds == "") continue;
         if (cmds == "format") { // special command
             format();
             shell = make_shell();
@@ -85,7 +102,9 @@ int main() {
             continue;
         }
         shell.run_cmd(cmds);
-        cout <<  cur_user.uname << ":" << cur_proc.cwd << " ";
+        if (cur_user.uname != "") {
+            cout << cur_user.uname << ":" << cur_proc.cwd << " ";
+        }
     }
 
 //    auto splits = shell.split("hello world apple pear ", " ");

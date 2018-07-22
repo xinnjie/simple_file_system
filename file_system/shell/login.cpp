@@ -53,6 +53,14 @@ int login::run_cmd(std::vector<std::string> args) {
                 cur_user.uid = stoi(id_str);
                 cur_user.uname = name;
                 cur_user.passwd = pass;
+                string path = "/users/" + username;
+                Inode *cwdi = dir.namei(path);
+                if (cwdi == nullptr) {
+                    cout << "login: unable to switch to user dir: "  << " <"  << name << ">" << endl;
+                    return -1;
+                }
+                cur_proc.cwd = path;
+                cur_proc.setCwdi(*cwdi);
                 return 0;
             }
             else {

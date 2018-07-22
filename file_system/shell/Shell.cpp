@@ -96,4 +96,8 @@ std::vector<std::string> Shell::tokenize(const std::string &command_str) {
     return results;
 }
 
+abstract_cmd &Shell::get_cmd(const string &cmd_name) {
+    return *commands[cmd_name];
+}
+
 

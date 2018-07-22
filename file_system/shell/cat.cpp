@@ -14,8 +14,8 @@ int cat::run_cmd(std::vector<std::string> args) {
             cerr << "cat: " << file_path << " is not accessible" << endl;
             return  -1;
         }
-        char buffer[512];
-        int n = sysfile.read(fd, buffer, 511);
+        char buffer[10240];
+        int n = sysfile.read(fd, buffer, 10239);
         if (sysfile.close(fd) == -1) {
             cerr << "cat: close error" << endl;
             return -1;

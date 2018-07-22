@@ -45,7 +45,7 @@ public:
     /**
      *  通过链表实现的 LRU
      */
-    Bcache(IDEio &ideio): bufs(NBUF), head(), ideio(ideio){
+    explicit Bcache(IDEio &ideio): bufs(NBUF), head(), ideio(ideio){
         head.prev = &head;
         head.next = &head;
         for (auto it = bufs.begin(); it != bufs.end(); ++it) {

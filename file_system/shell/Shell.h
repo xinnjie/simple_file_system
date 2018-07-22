@@ -27,6 +27,8 @@ public:
 
     void run_cmd(const std::string &cmds);
 
+    abstract_cmd &get_cmd(const std::string &cmd_name);
+
     void register_cmd(const std::string &command_name, abstract_cmd *cmd);
 
     void deregister_cmd(const std::string &command_name);

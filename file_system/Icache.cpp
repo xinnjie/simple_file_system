@@ -26,6 +26,7 @@ unsigned int Icache::find_block_location(Inode &inode, unsigned int bn) {
         // 如果该块还没有被分配，立刻进行分配
         if ((addr = inode.addrs[bn]) == 0) {
             inode.addrs[bn] = addr = bcache.balloc(inode.dev);
+            iupdate(inode);
             return addr;
         }
         return addr;
@@ -41,6 +42,7 @@ unsigned int Icache::find_block_location(Inode &inode, unsigned int bn) {
         if ((addr = entry[bn]) == 0) {
             entry[bn] = addr = bcache.balloc(inode.dev);
         }
+        bcache.bwrite(buf);
         bcache.brelease(buf);
         return addr;
     }
@@ -150,7 +152,7 @@ int Icache::readi(Inode &inode, char *dest, unsigned int off, unsigned int n) {
     }
 
     unsigned int total_read = 0, read_once = 0;
-    for (total_read = 0; total_read < n; total_read += read_once, dest += read_once) {
+    for (total_read = 0; total_read < n; total_read += read_once, dest += read_once, off += read_once) {
         Buf &buf = bcache.bread(inode.dev, find_block_location(inode, off / BSIZE));
         read_once = min(n - total_read, BSIZE - (off % BSIZE));
         memmove(dest, buf.data + (off%BSIZE), read_once);
@@ -167,7 +169,6 @@ int Icache::writei(Inode &inode, const char *src, unsigned int off, unsigned int
     if (off + n > MAXFILE*BSIZE) {
         return  -1;
     }
-
     unsigned int total_written = 0, write_once = 0;
     for (; total_written < n; total_written += write_once, off += write_once, src += write_once) {
         Buf &buf = bcache.bread(inode.dev, find_block_location(inode, off / BSIZE));
